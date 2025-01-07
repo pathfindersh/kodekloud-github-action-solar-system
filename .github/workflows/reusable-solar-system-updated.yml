@@ -1,0 +1,57 @@
+name: Solar System Workflow
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'feature/*'
+
+env:
+    MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData #added
+    MONGO_USERNAME: superuser #added
+    MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }} #added and secret is stored in secret place in github . 
+
+jobs:
+  common-setup:
+    name: Common Setup
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup NodeJS Version
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Dependencies
+      run: npm install
+
+  unit-testing:
+    needs: common-setup
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Unit Tests
+      run: npm test
+    
+    - name: Archive Test Result
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Mocha-Test-Result
+        path: test-results.xml
+
+  code-coverage:
+    needs: common-setup
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Code Coverage
+      run: npm run coverage || true
+      
+    - name: Upload Code Coverage Result
+      uses: actions/upload-artifact@v4
+      with:
+        name: Code-Coverage-Result
+        path: coverage
+        retention-days: 5
