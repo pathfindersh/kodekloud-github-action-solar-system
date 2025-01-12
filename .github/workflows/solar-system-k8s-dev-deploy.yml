@@ -79,7 +79,7 @@ jobs:
 
 
     dev-deploy:
-      needs: docker
+      # needs: docker
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Repo
