@@ -62,7 +62,6 @@ jobs:
       - unit-testing
       permissions: #added
         packages: write #added
-        
       runs-on: ubuntu-latest
       
       steps:
